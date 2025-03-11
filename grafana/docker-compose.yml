@@ -1,0 +1,55 @@
+# docker run -d --name tdengine -v ~/data/taos/dnode/data:/var/lib/taos -v ~/data/taos/dnode/log:/var/log/taos -p 6041:6041 tdengine/tdengine
+services:
+  tdengine:
+    image: tdengine/tdengine:latest
+    container_name: tdengine
+    hostname: tdengine
+    ports:
+      - "6041:6041"
+      - "6040:6040"
+      - "6030:6030"
+      - "6035:6035"
+      - "6042:6042"
+      - "6060:6060"
+    volumes:
+      - tdengine-data:/var/lib/taos
+      - tdengine-log:/var/log/taos
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=passwerd
+      - GF_INSTALL_PLUGINS=tdengine-datasource
+    volumes:
+      # - $PWD/emqx-exporter/config/grafana-template/EMQX5-enterprise:/grafana-dashboard-emqx5-ee
+      - grafana-data:/var/lib/grafana
+      # - $PWD/grafana-dashboards:/grafana-dashboard-energy-storage
+      # - $PWD/grafana-provisioning/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
+      # - $PWD/grafana-provisioning/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+    restart: always
+    depends_on:
+      - tdengine
+
+  solarfarm:
+    build: ./solarfarm
+    container_name: solarfarm-ingest
+    depends_on:
+      - tdengine
+    environment:
+      - TDENGINE_HOST=tdengine
+      - TDENGINE_USER=root
+      - TDENGINE_PASS=taosdata
+    volumes:
+      - ./solarfarm:/usr/src/app
+    working_dir: /usr/src/app
+    # command: ["node", "solarnew.js"] # Adjust if using TypeScript directly
+    restart: always
+
+volumes:
+  tdengine-data:
+  tdengine-log:
+  grafana-data:
