@@ -3,14 +3,18 @@ const Mock = require("mockjs");
 const moment = require("moment-timezone");
 const { fetchWeatherApi } = require('openmeteo'); // You'll need to install this
 
-let dsn = "ws://tdengine:6041";
+const TDENGINE_HOST = process.env.TDENGINE_HOST || 'localhost';
+const TDENGINE_USER = process.env.TDENGINE_USER || 'root';
+const TDENGINE_PASS = process.env.TDENGINE_PASS || 'taosdata';
+
+let dsn = "ws://" + TDENGINE_HOST + ":6041";
 const url = 'https://api.open-meteo.com/v1/forecast';
 
 async function createConnect() {
     try {
         let conf = new taos.WSConfig(dsn);
-        conf.setUser("root");
-        conf.setPwd("taosdata");
+        conf.setUser(TDENGINE_USER);
+        conf.setPwd(TDENGINE_PASS);
         conf.setDb("renewables");
         conn = await taos.sqlConnect(conf);
         console.log("Connected to " + dsn + " successfully.");
@@ -25,8 +29,8 @@ async function createDbAndTable() {
     let wsSql = null;
     try {
         let conf = new taos.WSConfig(dsn);
-        conf.setUser("root");
-        conf.setPwd("taosdata");
+        conf.setUser(TDENGINE_USER);
+        conf.setPwd(TDENGINE_PASS);
         wsSql = await taos.sqlConnect(conf);
         console.log("Connected to " + dsn + " successfully.");
 
