@@ -25,11 +25,11 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=passwerd
       - GF_INSTALL_PLUGINS=tdengine-datasource
     volumes:
-      # - $PWD/emqx-exporter/config/grafana-template/EMQX5-enterprise:/grafana-dashboard-emqx5-ee
       - grafana-data:/var/lib/grafana
-      # - $PWD/grafana-dashboards:/grafana-dashboard-energy-storage
-      # - $PWD/grafana-provisioning/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
+      - $PWD/grafana-dashboards:/etc/grafana/dashboards
       # - $PWD/grafana-provisioning/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+      # - $PWD/grafana-provisioning/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
+      
     restart: always
     depends_on:
       - tdengine

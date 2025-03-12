@@ -92,9 +92,10 @@ async function insertData() {
             for (const site of SITES) {
                 for (let s = 0; s < STRINGS; s++) {
                     for (let p = 0; p < PANELS; p++) {
-                        const panelId = `Panel_${String(p).padStart(2, '0')}`; // Consistent panel IDs
-                        const stringId = `String-${s}`;
-                        let tableName = `${site}_${panelId}_${stringId}`;                        
+                        //const panelId = `panel${String(p).padStart(2, '0')}`; // Consistent panel IDs
+                        const panelId = `panel${p}`; // Consistent panel IDs
+                        const stringId = `string${s}`;
+                        let tableName = `${site}-${stringId}-${panelId}`;                        
                         const [at, ws] = atws.get(site); // Get weather data
                         const mockData = generateMockData(at, ws);
                         const dateStr = moment().tz(TZ).format("YYYY-MM-DD HH:mm:ss.SSSZ");

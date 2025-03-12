@@ -1,0 +1,1100 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_RENEWABLES_",
+      "label": "renewables ",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "tdengine-datasource",
+      "pluginName": "TDengine Datasource"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "11.6.0-83314"
+    },
+    {
+      "type": "panel",
+      "id": "heatmap",
+      "name": "Heatmap",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "tdengine-datasource",
+      "name": "TDengine Datasource",
+      "version": "3.5.2"
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "panels": [],
+      "title": "Portfolio Aggregate Performance",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "tdengine-datasource",
+        "uid": "${DS_RENEWABLES_}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 40,
+          "min": 30,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "#EAB839",
+                "value": 33
+              },
+              {
+                "color": "green",
+                "value": 35
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "id": 1,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.6.0-83314",
+      "targets": [
+        {
+          "datasource": {
+            "type": "tdengine-datasource",
+            "uid": "${DS_RENEWABLES_}"
+          },
+          "formatType": "Time series",
+          "queryType": "SQL",
+          "refId": "A",
+          "sql": "select sum(latest) from (select ts, last(poweroutput_kw) as latest, tbname from renewables.solarfarms where site = 'solarfarma' and ts > $from and ts < $to group by site, tbname ) "
+        }
+      ],
+      "title": "Current Power Output - A",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "tdengine-datasource",
+        "uid": "${DS_RENEWABLES_}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 40,
+          "min": 30,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "#EAB839",
+                "value": 33
+              },
+              {
+                "color": "green",
+                "value": 35
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "id": 11,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.6.0-83314",
+      "targets": [
+        {
+          "datasource": {
+            "type": "tdengine-datasource",
+            "uid": "${DS_RENEWABLES_}"
+          },
+          "formatType": "Time series",
+          "queryType": "SQL",
+          "refId": "A",
+          "sql": "select sum(latest) from (select ts, last(poweroutput_kw) as latest, tbname from renewables.solarfarms where site = 'solarfarmb' and ts > $from and ts < $to group by site, tbname ) "
+        }
+      ],
+      "title": "Current Power Output - B",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "tdengine-datasource",
+        "uid": "${DS_RENEWABLES_}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 40,
+          "min": 30,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "#EAB839",
+                "value": 33
+              },
+              {
+                "color": "green",
+                "value": 35
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 8,
+        "y": 1
+      },
+      "id": 12,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.6.0-83314",
+      "targets": [
+        {
+          "datasource": {
+            "type": "tdengine-datasource",
+            "uid": "${DS_RENEWABLES_}"
+          },
+          "formatType": "Time series",
+          "queryType": "SQL",
+          "refId": "A",
+          "sql": "select sum(latest) from (select ts, last(poweroutput_kw) as latest, tbname from renewables.solarfarms where site = 'solarfarmc' and ts > $from and ts < $to group by site, tbname ) "
+        }
+      ],
+      "title": "Current Power Output - C",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "tdengine-datasource",
+        "uid": "${DS_RENEWABLES_}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 11,
+        "x": 12,
+        "y": 1
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0-83314",
+      "targets": [
+        {
+          "colNameFormatStr": "{{tbname}}",
+          "colNameToGroup": "tbname",
+          "datasource": {
+            "type": "tdengine-datasource",
+            "uid": "${DS_RENEWABLES_}"
+          },
+          "formatType": "Time series",
+          "queryType": "SQL",
+          "refId": "A",
+          "sql": "select _wstart as tstamp, avg(poweroutput_kw) as avgpo, tbname from renewables.solarfarms where ts > $from and ts < $to partition by tbname interval(5m) order by tbname asc"
+        }
+      ],
+      "title": "Total Power Output",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "solarfarma-string0-panel1",
+                "solarfarma-string0-panel2",
+                "solarfarma-string0-panel3",
+                "solarfarma-string0-panel4",
+                "solarfarma-string0-panel6",
+                "solarfarma-string0-panel7",
+                "solarfarma-string0-panel8",
+                "solarfarma-string0-panel9",
+                "solarfarma-string1-panel0",
+                "solarfarma-string1-panel1",
+                "solarfarma-string1-panel2",
+                "solarfarma-string1-panel3",
+                "solarfarma-string1-panel4",
+                "solarfarma-string1-panel6",
+                "solarfarma-string1-panel8",
+                "solarfarma-string1-panel9",
+                "solarfarma-string2-panel2",
+                "solarfarma-string2-panel3",
+                "solarfarma-string2-panel5",
+                "solarfarma-string2-panel8",
+                "solarfarma-string3-panel0",
+                "solarfarma-string3-panel1",
+                "solarfarma-string3-panel3",
+                "solarfarma-string3-panel6",
+                "solarfarma-string3-panel7",
+                "solarfarma-string4-panel0",
+                "solarfarma-string4-panel1",
+                "solarfarma-string4-panel2",
+                "solarfarma-string4-panel3",
+                "solarfarmb-string0-panel2",
+                "solarfarmb-string1-panel2",
+                "solarfarmb-string1-panel4",
+                "solarfarma-string0-panel0",
+                "solarfarma-string0-panel5",
+                "solarfarma-string1-panel5",
+                "solarfarma-string1-panel7",
+                "solarfarma-string2-panel0",
+                "solarfarma-string2-panel1",
+                "solarfarma-string2-panel4",
+                "solarfarma-string2-panel6",
+                "solarfarma-string2-panel7",
+                "solarfarma-string2-panel9",
+                "solarfarma-string3-panel2",
+                "solarfarma-string3-panel4",
+                "solarfarma-string3-panel5",
+                "solarfarma-string3-panel8",
+                "solarfarma-string3-panel9",
+                "solarfarma-string4-panel4",
+                "solarfarma-string4-panel5",
+                "solarfarma-string4-panel6",
+                "solarfarma-string4-panel7",
+                "solarfarma-string4-panel8",
+                "solarfarma-string4-panel9",
+                "solarfarma-string5-panel0",
+                "solarfarma-string5-panel1",
+                "solarfarma-string5-panel2",
+                "solarfarma-string5-panel3",
+                "solarfarma-string5-panel4",
+                "solarfarma-string5-panel5",
+                "solarfarma-string5-panel6",
+                "solarfarma-string5-panel7",
+                "solarfarma-string5-panel8",
+                "solarfarma-string5-panel9",
+                "solarfarma-string6-panel0",
+                "solarfarma-string6-panel1",
+                "solarfarma-string6-panel2",
+                "solarfarma-string6-panel3",
+                "solarfarma-string6-panel4",
+                "solarfarma-string6-panel5",
+                "solarfarma-string6-panel6",
+                "solarfarma-string6-panel7",
+                "solarfarma-string6-panel8",
+                "solarfarma-string6-panel9",
+                "solarfarma-string7-panel0",
+                "solarfarma-string7-panel1",
+                "solarfarma-string7-panel2",
+                "solarfarma-string7-panel3",
+                "solarfarma-string7-panel4",
+                "solarfarma-string7-panel5",
+                "solarfarma-string7-panel6",
+                "solarfarma-string7-panel7",
+                "solarfarma-string7-panel8",
+                "solarfarma-string7-panel9",
+                "solarfarma-string8-panel0",
+                "solarfarma-string8-panel1",
+                "solarfarma-string8-panel2",
+                "solarfarma-string8-panel3",
+                "solarfarma-string8-panel4",
+                "solarfarma-string8-panel5",
+                "solarfarma-string8-panel6",
+                "solarfarma-string8-panel7",
+                "solarfarma-string8-panel8",
+                "solarfarma-string8-panel9",
+                "solarfarma-string9-panel0",
+                "solarfarma-string9-panel1",
+                "solarfarma-string9-panel2",
+                "solarfarma-string9-panel3",
+                "solarfarma-string9-panel4",
+                "solarfarma-string9-panel5",
+                "solarfarma-string9-panel6",
+                "solarfarma-string9-panel7",
+                "solarfarma-string9-panel8",
+                "solarfarma-string9-panel9",
+                "solarfarmb-string0-panel0",
+                "solarfarmb-string0-panel1",
+                "solarfarmb-string0-panel3",
+                "solarfarmb-string0-panel4",
+                "solarfarmb-string0-panel5",
+                "solarfarmb-string0-panel6",
+                "solarfarmb-string0-panel7",
+                "solarfarmb-string0-panel8",
+                "solarfarmb-string0-panel9",
+                "solarfarmb-string1-panel0",
+                "solarfarmb-string1-panel1",
+                "solarfarmb-string1-panel3",
+                "solarfarmb-string1-panel5",
+                "solarfarmb-string1-panel6",
+                "solarfarmb-string1-panel7",
+                "solarfarmb-string1-panel8",
+                "solarfarmb-string1-panel9",
+                "solarfarmb-string2-panel0",
+                "solarfarmb-string2-panel1",
+                "solarfarmb-string2-panel2",
+                "solarfarmb-string2-panel3",
+                "solarfarmb-string2-panel4",
+                "solarfarmb-string2-panel5",
+                "solarfarmb-string2-panel6",
+                "solarfarmb-string2-panel7",
+                "solarfarmb-string2-panel8",
+                "solarfarmb-string2-panel9",
+                "solarfarmb-string3-panel0",
+                "solarfarmb-string3-panel1",
+                "solarfarmb-string3-panel2",
+                "solarfarmb-string3-panel3",
+                "solarfarmb-string3-panel4",
+                "solarfarmb-string3-panel5",
+                "solarfarmb-string3-panel6",
+                "solarfarmb-string3-panel7",
+                "solarfarmb-string3-panel8",
+                "solarfarmb-string3-panel9",
+                "solarfarmb-string4-panel0",
+                "solarfarmb-string4-panel1",
+                "solarfarmb-string4-panel2",
+                "solarfarmb-string4-panel3",
+                "solarfarmb-string4-panel4",
+                "solarfarmb-string4-panel5",
+                "solarfarmb-string4-panel6",
+                "solarfarmb-string4-panel7",
+                "solarfarmb-string4-panel8",
+                "solarfarmb-string4-panel9",
+                "solarfarmb-string5-panel0",
+                "solarfarmb-string5-panel1",
+                "solarfarmb-string5-panel2",
+                "solarfarmb-string5-panel3",
+                "solarfarmb-string5-panel4",
+                "solarfarmb-string5-panel5",
+                "solarfarmb-string5-panel6",
+                "solarfarmb-string5-panel7",
+                "solarfarmb-string5-panel8",
+                "solarfarmb-string5-panel9",
+                "solarfarmb-string6-panel0",
+                "solarfarmb-string6-panel1",
+                "solarfarmb-string6-panel2",
+                "solarfarmb-string6-panel3",
+                "solarfarmb-string6-panel4",
+                "solarfarmb-string6-panel5",
+                "solarfarmb-string6-panel6",
+                "solarfarmb-string6-panel7",
+                "solarfarmb-string6-panel8",
+                "solarfarmb-string6-panel9",
+                "solarfarmb-string7-panel0",
+                "solarfarmb-string7-panel1",
+                "solarfarmb-string7-panel2",
+                "solarfarmb-string7-panel3",
+                "solarfarmb-string7-panel4",
+                "solarfarmb-string7-panel5",
+                "solarfarmb-string7-panel6",
+                "solarfarmb-string7-panel7",
+                "solarfarmb-string7-panel8",
+                "solarfarmb-string7-panel9",
+                "solarfarmb-string8-panel0",
+                "solarfarmb-string8-panel1",
+                "solarfarmb-string8-panel2",
+                "solarfarmb-string8-panel3",
+                "solarfarmb-string8-panel4",
+                "solarfarmb-string8-panel5",
+                "solarfarmb-string8-panel6",
+                "solarfarmb-string8-panel7",
+                "solarfarmb-string8-panel8",
+                "solarfarmb-string8-panel9",
+                "solarfarmb-string9-panel0",
+                "solarfarmb-string9-panel1",
+                "solarfarmb-string9-panel2",
+                "solarfarmb-string9-panel3",
+                "solarfarmb-string9-panel4",
+                "solarfarmb-string9-panel5",
+                "solarfarmb-string9-panel6",
+                "solarfarmb-string9-panel7",
+                "solarfarmb-string9-panel8",
+                "solarfarmb-string9-panel9",
+                "solarfarmc-string0-panel0",
+                "solarfarmc-string0-panel1",
+                "solarfarmc-string0-panel2",
+                "solarfarmc-string0-panel3",
+                "solarfarmc-string0-panel4",
+                "solarfarmc-string0-panel5",
+                "solarfarmc-string0-panel6",
+                "solarfarmc-string0-panel7",
+                "solarfarmc-string0-panel8",
+                "solarfarmc-string0-panel9",
+                "solarfarmc-string1-panel0",
+                "solarfarmc-string1-panel1",
+                "solarfarmc-string1-panel2",
+                "solarfarmc-string1-panel3",
+                "solarfarmc-string1-panel4",
+                "solarfarmc-string1-panel5",
+                "solarfarmc-string1-panel6",
+                "solarfarmc-string1-panel7",
+                "solarfarmc-string1-panel8",
+                "solarfarmc-string1-panel9",
+                "solarfarmc-string2-panel0",
+                "solarfarmc-string2-panel1",
+                "solarfarmc-string2-panel2",
+                "solarfarmc-string2-panel3",
+                "solarfarmc-string2-panel4",
+                "solarfarmc-string2-panel5",
+                "solarfarmc-string2-panel6",
+                "solarfarmc-string2-panel7",
+                "solarfarmc-string2-panel8",
+                "solarfarmc-string2-panel9",
+                "solarfarmc-string3-panel0",
+                "solarfarmc-string3-panel1",
+                "solarfarmc-string3-panel2",
+                "solarfarmc-string3-panel3",
+                "solarfarmc-string3-panel4",
+                "solarfarmc-string3-panel5",
+                "solarfarmc-string3-panel6",
+                "solarfarmc-string3-panel7",
+                "solarfarmc-string3-panel8",
+                "solarfarmc-string3-panel9",
+                "solarfarmc-string4-panel0",
+                "solarfarmc-string4-panel1",
+                "solarfarmc-string4-panel2",
+                "solarfarmc-string4-panel3",
+                "solarfarmc-string4-panel4",
+                "solarfarmc-string4-panel5",
+                "solarfarmc-string4-panel6",
+                "solarfarmc-string4-panel7",
+                "solarfarmc-string4-panel8",
+                "solarfarmc-string4-panel9",
+                "solarfarmc-string5-panel0",
+                "solarfarmc-string5-panel1",
+                "solarfarmc-string5-panel2",
+                "solarfarmc-string5-panel3",
+                "solarfarmc-string5-panel4",
+                "solarfarmc-string5-panel5",
+                "solarfarmc-string5-panel6",
+                "solarfarmc-string5-panel7",
+                "solarfarmc-string5-panel8",
+                "solarfarmc-string5-panel9",
+                "solarfarmc-string6-panel0",
+                "solarfarmc-string6-panel1",
+                "solarfarmc-string6-panel2",
+                "solarfarmc-string6-panel3",
+                "solarfarmc-string6-panel4",
+                "solarfarmc-string6-panel5",
+                "solarfarmc-string6-panel6",
+                "solarfarmc-string6-panel7",
+                "solarfarmc-string6-panel8",
+                "solarfarmc-string6-panel9",
+                "solarfarmc-string7-panel0",
+                "solarfarmc-string7-panel1",
+                "solarfarmc-string7-panel2",
+                "solarfarmc-string7-panel3",
+                "solarfarmc-string7-panel4",
+                "solarfarmc-string7-panel5",
+                "solarfarmc-string7-panel6",
+                "solarfarmc-string7-panel7",
+                "solarfarmc-string7-panel8",
+                "solarfarmc-string7-panel9",
+                "solarfarmc-string8-panel0",
+                "solarfarmc-string8-panel1",
+                "solarfarmc-string8-panel2",
+                "solarfarmc-string8-panel3",
+                "solarfarmc-string8-panel4",
+                "solarfarmc-string8-panel5",
+                "solarfarmc-string8-panel6",
+                "solarfarmc-string8-panel7",
+                "solarfarmc-string8-panel8",
+                "solarfarmc-string8-panel9",
+                "solarfarmc-string9-panel0",
+                "solarfarmc-string9-panel1",
+                "solarfarmc-string9-panel2",
+                "solarfarmc-string9-panel3",
+                "solarfarmc-string9-panel4",
+                "solarfarmc-string9-panel5",
+                "solarfarmc-string9-panel6",
+                "solarfarmc-string9-panel7",
+                "solarfarmc-string9-panel8",
+                "solarfarmc-string9-panel9"
+              ],
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "tdengine-datasource",
+        "uid": "${DS_RENEWABLES_}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "Oranges",
+          "steps": 64
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false
+        }
+      },
+      "pluginVersion": "11.6.0-83314",
+      "targets": [
+        {
+          "colNameFormatStr": "{{site}}",
+          "colNameToGroup": "site",
+          "datasource": {
+            "type": "tdengine-datasource",
+            "uid": "${DS_RENEWABLES_}"
+          },
+          "formatType": "Time series",
+          "queryType": "SQL",
+          "refId": "A",
+          "sql": "select _wstart, (sum(poweroutput_kw)*5)/300 as `Total Power Output`,site from renewables.solarfarms where ts > $from and ts < $to partition by site interval(5m) order by site asc"
+        }
+      ],
+      "title": "Power Output by Farm",
+      "type": "heatmap"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 6,
+      "panels": [],
+      "repeat": "sites",
+      "title": "Average Metrics $sites",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "tdengine-datasource",
+        "uid": "${DS_RENEWABLES_}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 0,
+        "y": 17
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0-83314",
+      "targets": [
+        {
+          "datasource": {
+            "type": "tdengine-datasource",
+            "uid": "${DS_RENEWABLES_}"
+          },
+          "formatType": "Time series",
+          "queryType": "SQL",
+          "refId": "A",
+          "sql": "select _wstart, avg(ambienttemperature_c) as `Ambient Temp C`, avg(windspeed_mps) as `Wind Speed m/s` from renewables.solarfarms where ts > $from and ts < $to and site = '$sites'  interval(5m)"
+        }
+      ],
+      "title": "Ambient Temperature and Wind Speed",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "tdengine-datasource",
+        "uid": "${DS_RENEWABLES_}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 4,
+        "y": 17
+      },
+      "id": 8,
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "Oranges",
+          "steps": 64
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false,
+          "unit": "volt"
+        }
+      },
+      "pluginVersion": "11.6.0-83314",
+      "targets": [
+        {
+          "colNameFormatStr": "{{string_id}}",
+          "colNameToGroup": "string_id",
+          "datasource": {
+            "type": "tdengine-datasource",
+            "uid": "${DS_RENEWABLES_}"
+          },
+          "formatType": "Time series",
+          "queryType": "SQL",
+          "refId": "A",
+          "sql": "select _wstart, sum(voltage)/10 as `Total Voltage`,string_id from renewables.solarfarms where ts > $from and ts < $to and site = '$sites' partition by string_id interval(5m) order by string_id asc"
+        }
+      ],
+      "title": "Total Voltage by String",
+      "type": "heatmap"
+    },
+    {
+      "datasource": {
+        "type": "tdengine-datasource",
+        "uid": "${DS_RENEWABLES_}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 13,
+        "y": 17
+      },
+      "id": 9,
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "Oranges",
+          "steps": 64
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false,
+          "unit": "amp"
+        }
+      },
+      "pluginVersion": "11.6.0-83314",
+      "targets": [
+        {
+          "colNameFormatStr": "{{string_id}}",
+          "colNameToGroup": "string_id",
+          "datasource": {
+            "type": "tdengine-datasource",
+            "uid": "${DS_RENEWABLES_}"
+          },
+          "formatType": "Time series",
+          "queryType": "SQL",
+          "refId": "A",
+          "sql": "select _wstart, avg(current) as `Average Current`,string_id from renewables.solarfarms where ts > $from and ts < $to and site = '$sites' partition by string_id interval(5m) order by string_id asc"
+        }
+      ],
+      "title": "Average Current by String",
+      "type": "heatmap"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 41,
+  "tags": [
+    "cloudsolarportfolio"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "solarfarma",
+          "value": "solarfarma"
+        },
+        "label": "Site",
+        "name": "sites",
+        "options": [
+          {
+            "selected": true,
+            "text": "solarfarma",
+            "value": "solarfarma"
+          },
+          {
+            "selected": false,
+            "text": "solarfarmb",
+            "value": "solarfarmb"
+          },
+          {
+            "selected": false,
+            "text": "solarfarmc",
+            "value": "solarfarmc"
+          }
+        ],
+        "query": "solarfarma, solarfarmb, solarfarmc",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Cloud Solar Portfolio",
+  "uid": "d6e865c1-a208-418e-920c-f8df62e38636",
+  "version": 1,
+  "weekStart": ""
+}
