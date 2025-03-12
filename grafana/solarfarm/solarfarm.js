@@ -7,6 +7,7 @@ const TDENGINE_HOST = process.env.TDENGINE_HOST || 'localhost';
 const TDENGINE_USER = process.env.TDENGINE_USER || 'root';
 const TDENGINE_PASS = process.env.TDENGINE_PASS || 'taosdata';
 const TDENGINE_DB = process.env.TDENGINE_DB || 'renewables';
+const TZ = process.env.TZ || 'America/Los_Angeles';
 
 let dsn = "ws://" + TDENGINE_HOST + ":6041";
 const url = 'https://api.open-meteo.com/v1/forecast';
@@ -96,8 +97,9 @@ async function insertData() {
                         let tableName = `${site}_${panelId}_${stringId}`;                        
                         const [at, ws] = atws.get(site); // Get weather data
                         const mockData = generateMockData(at, ws);
+                        const dateStr = moment().tz(TZ).format("YYYY-MM-DD HH:mm:ss.SSSZ");
                         const insertQuery = `INSERT INTO renewables.\`${tableName}\` USING renewables.solarfarms (panelid, string_id, site) TAGS('${panelId}', '${stringId}', '${site}') ` +
-                            `VALUES ('${moment().format("YYYY-MM-DD HH:mm:ss.SSS")}', ${mockData.ambienttemperature_c}, ${mockData.windspeed_mps}, ${mockData.poweroutput_kw}, ${mockData.current}, ${mockData.voltage})`;
+                            `VALUES ('${dateStr}', ${mockData.ambienttemperature_c}, ${mockData.windspeed_mps}, ${mockData.poweroutput_kw}, ${mockData.current}, ${mockData.voltage})`;
                         let taosResult = await wsSql.exec(insertQuery);
                         // console.log(insertQuery);
                         // console.log("Successfully inserted " + taosResult.getAffectRows() + " rows to renewables.solarfarms.");
