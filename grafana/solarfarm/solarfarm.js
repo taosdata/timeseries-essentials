@@ -6,6 +6,7 @@ const { fetchWeatherApi } = require('openmeteo'); // You'll need to install this
 const TDENGINE_HOST = process.env.TDENGINE_HOST || 'localhost';
 const TDENGINE_USER = process.env.TDENGINE_USER || 'root';
 const TDENGINE_PASS = process.env.TDENGINE_PASS || 'taosdata';
+const TDENGINE_DB = process.env.TDENGINE_DB || 'renewables';
 
 let dsn = "ws://" + TDENGINE_HOST + ":6041";
 const url = 'https://api.open-meteo.com/v1/forecast';
@@ -15,7 +16,7 @@ async function createConnect() {
         let conf = new taos.WSConfig(dsn);
         conf.setUser(TDENGINE_USER);
         conf.setPwd(TDENGINE_PASS);
-        conf.setDb("renewables");
+        conf.setDb(TDENGINE_DB);
         conn = await taos.sqlConnect(conf);
         console.log("Connected to " + dsn + " successfully.");
         return conn;
@@ -92,14 +93,13 @@ async function insertData() {
                     for (let p = 0; p < PANELS; p++) {
                         const panelId = `Panel_${String(p).padStart(2, '0')}`; // Consistent panel IDs
                         const stringId = `String-${s}`;
+                        let tableName = `${site}_${panelId}_${stringId}`;                        
                         const [at, ws] = atws.get(site); // Get weather data
-
                         const mockData = generateMockData(at, ws);
-
-                        const insertQuery = `INSERT INTO renewables.${panelId} USING renewables.solarfarms (panelid, string_id, site) TAGS('${panelId}', '${stringId}', '${site}') ` +
+                        const insertQuery = `INSERT INTO renewables.\`${tableName}\` USING renewables.solarfarms (panelid, string_id, site) TAGS('${panelId}', '${stringId}', '${site}') ` +
                             `VALUES ('${moment().format("YYYY-MM-DD HH:mm:ss.SSS")}', ${mockData.ambienttemperature_c}, ${mockData.windspeed_mps}, ${mockData.poweroutput_kw}, ${mockData.current}, ${mockData.voltage})`;
-
                         let taosResult = await wsSql.exec(insertQuery);
+                        // console.log(insertQuery);
                         // console.log("Successfully inserted " + taosResult.getAffectRows() + " rows to renewables.solarfarms.");
                         rows_inserted += taosResult.getAffectRows();
                     }
@@ -109,6 +109,7 @@ async function insertData() {
         } catch (err) {
             console.error(`Failed to insert data, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
         }
+        // queryData();
     }, 10000); // Data every 10 seconds
 }
 
@@ -131,7 +132,7 @@ function generateMockData(at, ws) {
     const voltage = powerouteff / current;
 
     // if it's night time everything goes to 0 except ambient temp and windspeed
-    if (hrs > 20 || hrs < 6) {
+    if (hrs > 23 || hrs < 6) {
         return {
             "ambienttemperature_c": atf.toFixed(2),
             "windspeed_mps": windspeed,
@@ -180,6 +181,32 @@ async function getWeather(lat, long) {
     } catch (error) {
         console.error('Error fetching weather data:', error);
         return ['0', '0']; // Default values in case of error
+    }
+}
+// ANCHOR: queryData
+async function queryData() {
+    let wsRows = null;
+    let wsSql = null;
+    let sql = 'SELECT ts,panelid, string_id, site FROM renewables.solarfarms limit 100';
+    try {
+        wsSql = await createConnect();
+        wsRows = await wsSql.query(sql);
+        while (await wsRows.next()) {
+            let row = wsRows.getData();
+            console.log('ts: ' + row[0] + ', panelid: ' + row[1] + ', string_id:  ' + row[2], ', site: ' + row[3]);
+        }
+    }
+    catch (err) {
+        console.error(`Failed to query data from renewables.solarfarms, sql: ${sql}, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
+        throw err;
+    }
+    finally {
+        if (wsRows) {
+            await wsRows.close();
+        }
+        if (wsSql) {
+            await wsSql.close();
+        }
     }
 }
 
