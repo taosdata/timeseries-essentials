@@ -18,9 +18,7 @@ services:
       - TDENGINE_HOST=enterprise
       - TDENGINE_USER=root
       - TDENGINE_PASS=taosdata
-    volumes:
-      - ./solarfarm:/usr/src/app
-    working_dir: /usr/src/app
+    working_dir: /app
     command: ["node", "solarfarm.js", "solarfarma"] # Adjust if using TypeScript directly
     restart: always
 
