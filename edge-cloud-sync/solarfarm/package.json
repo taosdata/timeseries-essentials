@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "@tdengine/websocket": "^3.1.4",
+    "@types/moment": "^2.11.29",
+    "fs": "^0.0.1-security",
+    "mockjs": "^1.1.0",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.5.47",
+    "openmeteo": "^1.1.4"
+  },
+  "devDependencies": {
+    "@types/mockjs": "^1.0.10",
+    "@types/node": "^22.12.0"
+  },
+  "scripts": {
+    "start": "node solarfarm.js"    
+  }
+}

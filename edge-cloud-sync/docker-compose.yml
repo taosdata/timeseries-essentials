@@ -1,0 +1,29 @@
+services:
+  tdengine:
+    image: tdengine/tdengine-ee:3.3.5.10
+    container_name: tdengine_enterprise
+    hostname: enterprise
+    ports:
+      - "6030-6060:6030-6060"
+    volumes:
+      - tdengine-ee-data:/var/lib/taos
+      - tdengine-ee-log:/var/log/taos
+    restart: always
+  solarfarma:
+    build: ./solarfarm
+    container_name: solarfarma-ingest
+    depends_on:
+      - tdengine
+    environment:
+      - TDENGINE_HOST=enterprise
+      - TDENGINE_USER=root
+      - TDENGINE_PASS=taosdata
+    volumes:
+      - ./solarfarm:/usr/src/app
+    working_dir: /usr/src/app
+    command: ["node", "solarfarm.js", "solarfarma"] # Adjust if using TypeScript directly
+    restart: always
+
+volumes:
+  tdengine-ee-data:
+  tdengine-ee-log:
