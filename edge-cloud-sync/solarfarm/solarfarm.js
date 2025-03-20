@@ -138,7 +138,8 @@ function generateMockData(at, ws) {
     const current = 9.0 * (radiation / 1000);
     const voltage = powerouteff / current;
 
-    if (hrs > 23 || hrs < 6) {
+    // if (hrs > 23 || hrs < 6) {
+    if (false) { 
         return {
             "ambienttemperature_c": atf.toFixed(2),
             "windspeed_mps": windspeed,

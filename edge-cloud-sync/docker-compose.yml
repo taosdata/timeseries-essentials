@@ -9,7 +9,7 @@ services:
       - tdengine-ee-data:/var/lib/taos
       - tdengine-ee-log:/var/log/taos
     restart: always
-  solarfarma:
+  solarfarma:  # solarfarmb, solarfarmc
     build: ./solarfarm
     container_name: solarfarma-ingest
     depends_on:
