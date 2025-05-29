@@ -21,8 +21,8 @@ services:
     ports:
       - 3000:3000
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=passwerd
-      - GF_INSTALL_PLUGINS=tdengine-datasource
+      GF_SECURITY_ADMIN_PASSWORD: "passwerd"
+      GF_INSTALL_PLUGINS: "https://github.com/taosdata/grafanaplugin/releases/download/v3.7.2/tdengine-datasource-3.7.2.zip;tdengine-datasource"
     volumes:
       - grafana-data:/var/lib/grafana
       # - $PWD/grafana-dashboards:/etc/grafana/dashboards
