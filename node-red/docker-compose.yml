@@ -1,0 +1,41 @@
+services:
+  node-red:
+    build:
+      context: . # Build from the current directory where the Dockerfile is located
+      dockerfile: Dockerfile
+    container_name: node-red
+    ports:
+      - "1880:1880"
+    volumes:
+      - node-red-data:/data
+      - ./entrypoint.sh:/usr/local/bin/custom-entrypoint.sh # Mount the custom entrypoint
+    entrypoint: ["/usr/local/bin/custom-entrypoint.sh"] # Use your custom entrypoint
+
+  tdengine:
+    image: tdengine/tdengine:latest
+    container_name: tdengine
+    hostname: tdengine
+    ports:
+      - "6041:6041"
+      - "6040:6040"
+      - "6030:6030"
+      - "6035:6035"
+      - "6042:6042"
+      - "6060:6060"
+    volumes:
+      - tdengine-data:/var/lib/taos
+      - tdengine-log:/var/log/taos
+    restart: always
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:6041/rest/sql", "-u", "root:taosdata"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+volumes:
+  tdengine-data:
+  tdengine-log:
+  node-red-data:
+
+networks:
+  node-red-net:
+
