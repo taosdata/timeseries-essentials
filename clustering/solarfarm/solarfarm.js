@@ -1,5 +1,4 @@
 const taos = require("@tdengine/websocket");
-
 const Mock = require("mockjs");
 const moment = require("moment-timezone");
 const { fetchWeatherApi } = require('openmeteo');
@@ -36,14 +35,12 @@ async function createConnect() {
         conf.setDb(TDENGINE_DB);
         conn = await taos.sqlConnect(conf);
         console.log("Connected to " + dsn + " successfully.");
-        let cursor = conn.cursor();
-        return cursor;
+        return conn;
     } catch (err) {
         console.log("Failed to connect to " + dsn + ", ErrCode: " + err.code + ", ErrMessage: " + err.message);
         throw err;
     }
 }
-
 
 async function createDbAndTable() {
     let wsSql = null;
@@ -54,15 +51,15 @@ async function createDbAndTable() {
         wsSql = await taos.sqlConnect(conf);
         console.log("Connected to " + dsn + " successfully.");
 
-        await wsSql.exec("CREATE DATABASE IF NOT EXISTS renewables_ha;");
-        console.log("Created database renewables_ha successfully.");
+        await wsSql.exec("CREATE DATABASE IF NOT EXISTS renewables");
+        console.log("Created database renewables successfully.");
 
         await wsSql.exec(
-            "CREATE STABLE IF NOT EXISTS renewables_ha.solarfarms " +
+            "CREATE STABLE IF NOT EXISTS renewables.solarfarms " +
             "(ts TIMESTAMP, ambienttemperature_c FLOAT, windspeed_mps FLOAT, poweroutput_kw FLOAT, current FLOAT, voltage FLOAT) " +
             "TAGS (panelid BINARY(50), string_id BINARY(50), site BINARY(50));"
         );
-        console.log("Created stable renewables_ha.solarfarms successfully");
+        console.log("Created stable renewables.solarfarms successfully");
     } catch (err) {
         console.error(`Failed to create database or stable, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
         throw err;
@@ -110,13 +107,13 @@ async function insertData() {
                     const [at, ws] = atws.get(solarFarmId);
                     const mockData = generateMockData(at, ws);
                     const dateStr = moment().tz(TZ).format("YYYY-MM-DD HH:mm:ss.SSSZ");
-                    const insertQuery = `INSERT INTO renewables_ha.\`${tableName}\` USING renewables_ha.solarfarms (panelid, string_id, site) TAGS('${panelId}', '${stringId}', '${solarFarmId}') ` +
+                    const insertQuery = `INSERT INTO renewables.\`${tableName}\` USING renewables.solarfarms (panelid, string_id, site) TAGS('${panelId}', '${stringId}', '${solarFarmId}') ` +
                         `VALUES ('${dateStr}', ${mockData.ambienttemperature_c}, ${mockData.windspeed_mps}, ${mockData.poweroutput_kw}, ${mockData.current}, ${mockData.voltage})`;
                     let taosResult = await wsSql.exec(insertQuery);
                     rows_inserted += taosResult.getAffectRows();
                 }
             }
-            console.log(`Inserted ${rows_inserted} rows to renewables_ha.solarfarms for ${solarFarmId}.`);
+            console.log(`Inserted ${rows_inserted} rows to renewables.solarfarms for ${solarFarmId}.`);
         } catch (err) {
             console.error(`Failed to insert data for ${solarFarmId}, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
         }
@@ -197,11 +194,9 @@ async function getWeather(lat, long) {
 async function queryData() {
     let wsRows = null;
     let wsSql = null;
-    let sql = 'SELECT ts,panelid, string_id, site FROM renewables_ha.solarfarms limit 100';
+    let sql = 'SELECT ts,panelid, string_id, site FROM renewables.solarfarms limit 100';
     try {
         wsSql = await createConnect();
-        // wsSql = await createRestConnect();
-        console.log("Connected to " + dsn + " successfully.");
         wsRows = await wsSql.query(sql);
         while (await wsRows.next()) {
             let row = wsRows.getData();
@@ -209,7 +204,7 @@ async function queryData() {
         }
     }
     catch (err) {
-        console.error(`Failed to query data from renewables_ha.solarfarms, sql: ${sql}, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
+        console.error(`Failed to query data from renewables.solarfarms, sql: ${sql}, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
         throw err;
     }
     finally {
