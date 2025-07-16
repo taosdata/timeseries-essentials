@@ -1,0 +1,85 @@
+services:
+  td1:
+    image: tdengine/tdengine-ee:3.3.6.13
+    container_name: td1
+    hostname: td1
+    environment:
+      - TAOS_FQDN=td1
+    networks:
+      taos_net:
+        ipv4_address: 172.28.0.2
+    ports:
+      - "6030:6030"
+      - "6041:6041"
+      - "6043:6043"
+      - "6044-6049:6044-6049"
+      - "6044-6045:6044-6045/udp"
+      - "6060:6060"
+    restart: unless-stopped
+
+  td2:
+    image: tdengine/tdengine-ee:3.3.6.13
+    container_name: td2
+    hostname: td2
+    environment:
+      - TAOS_FQDN=td2
+      - TAOS_FIRST_EP=td1:6030
+    networks:
+      taos_net:
+        ipv4_address: 172.28.0.3
+    restart: unless-stopped
+    depends_on:
+      - td1
+
+  td3:
+    image: tdengine/tdengine-ee:3.3.6.13
+    container_name: td3
+    hostname: td3
+    environment:
+      - TAOS_FQDN=td3
+      - TAOS_FIRST_EP=td1:6030
+    networks:
+      taos_net:
+        ipv4_address: 172.28.0.4
+    restart: unless-stopped
+    depends_on:
+      - td1
+
+  nginx-proxy:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - "8080:80"
+    networks:
+      taos_net:
+        ipv4_address: 172.28.0.5
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - td1
+    restart: unless-stopped
+
+  solarfarm:  # solarfarmb, solarfarmc
+    build: ./solarfarm
+    container_name: solarfarm-ingest
+    # depends_on:
+    #   - tdengine
+    environment:
+      - TDENGINE_HOST=18.117.40.207
+      #  - TDENGINE_HOST=18.119.85.239  # 18.119.85.239
+      - TDENGINE_USER=root
+      - TDENGINE_PASS=taosdata
+    working_dir: /app
+    command: ["node", "solarfarm.js", "solarfarma"] # Adjust if using TypeScript directly
+    restart: always
+
+networks:
+  taos_net:
+    driver: bridge
+    ipam:
+      config:
+        # Subnet changed to an unused range
+        - subnet: 172.28.0.0/24
+volumes:
+  tdengine-ee-data:
+  tdengine-ee-log:

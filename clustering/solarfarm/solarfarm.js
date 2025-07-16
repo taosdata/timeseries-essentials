@@ -6,7 +6,7 @@ const { fetchWeatherApi } = require('openmeteo');
 const TDENGINE_HOST = process.env.TDENGINE_HOST || 'localhost';
 const TDENGINE_USER = process.env.TDENGINE_USER || 'root';
 const TDENGINE_PASS = process.env.TDENGINE_PASS || 'taosdata';
-const TDENGINE_DB = process.env.TDENGINE_DB || 'renewables';
+const TDENGINE_DB = process.env.TDENGINE_DB || 'renewables_ha';
 const TZ = process.env.TZ || 'America/Los_Angeles';
 
 let dsn = "ws://" + TDENGINE_HOST + ":6041";
@@ -51,15 +51,15 @@ async function createDbAndTable() {
         wsSql = await taos.sqlConnect(conf);
         console.log("Connected to " + dsn + " successfully.");
 
-        await wsSql.exec("CREATE DATABASE IF NOT EXISTS renewables");
-        console.log("Created database renewables successfully.");
+        await wsSql.exec("CREATE DATABASE IF NOT EXISTS renewables_ha replica 3;");
+        console.log("Created database renewables_ha successfully.");
 
         await wsSql.exec(
-            "CREATE STABLE IF NOT EXISTS renewables.solarfarms " +
+            "CREATE STABLE IF NOT EXISTS renewables_ha.solarfarms " +
             "(ts TIMESTAMP, ambienttemperature_c FLOAT, windspeed_mps FLOAT, poweroutput_kw FLOAT, current FLOAT, voltage FLOAT) " +
             "TAGS (panelid BINARY(50), string_id BINARY(50), site BINARY(50));"
         );
-        console.log("Created stable renewables.solarfarms successfully");
+        console.log("Created stable renewables_ha.solarfarms successfully");
     } catch (err) {
         console.error(`Failed to create database or stable, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
         throw err;
@@ -107,13 +107,13 @@ async function insertData() {
                     const [at, ws] = atws.get(solarFarmId);
                     const mockData = generateMockData(at, ws);
                     const dateStr = moment().tz(TZ).format("YYYY-MM-DD HH:mm:ss.SSSZ");
-                    const insertQuery = `INSERT INTO renewables.\`${tableName}\` USING renewables.solarfarms (panelid, string_id, site) TAGS('${panelId}', '${stringId}', '${solarFarmId}') ` +
+                    const insertQuery = `INSERT INTO renewables_ha.\`${tableName}\` USING renewables_ha.solarfarms (panelid, string_id, site) TAGS('${panelId}', '${stringId}', '${solarFarmId}') ` +
                         `VALUES ('${dateStr}', ${mockData.ambienttemperature_c}, ${mockData.windspeed_mps}, ${mockData.poweroutput_kw}, ${mockData.current}, ${mockData.voltage})`;
                     let taosResult = await wsSql.exec(insertQuery);
                     rows_inserted += taosResult.getAffectRows();
                 }
             }
-            console.log(`Inserted ${rows_inserted} rows to renewables.solarfarms for ${solarFarmId}.`);
+            console.log(`Inserted ${rows_inserted} rows to renewables_ha.solarfarms for ${solarFarmId}.`);
         } catch (err) {
             console.error(`Failed to insert data for ${solarFarmId}, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
         }
@@ -194,7 +194,7 @@ async function getWeather(lat, long) {
 async function queryData() {
     let wsRows = null;
     let wsSql = null;
-    let sql = 'SELECT ts,panelid, string_id, site FROM renewables.solarfarms limit 100';
+    let sql = 'SELECT ts,panelid, string_id, site FROM renewables_ha.solarfarms limit 100';
     try {
         wsSql = await createConnect();
         wsRows = await wsSql.query(sql);
@@ -204,7 +204,7 @@ async function queryData() {
         }
     }
     catch (err) {
-        console.error(`Failed to query data from renewables.solarfarms, sql: ${sql}, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
+        console.error(`Failed to query data from renewables_ha.solarfarms, sql: ${sql}, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
         throw err;
     }
     finally {
