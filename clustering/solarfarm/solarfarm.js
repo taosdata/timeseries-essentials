@@ -87,6 +87,91 @@ async function insertData() {
     atws.set(solarFarmId, [at, ws]);
 
     setInterval(async () => {
+        // Update weather data periodically (e.g., every 5 minutes)
+        let rows_inserted = 0;
+        const ts = Date.now();
+        const mins = new Date(ts).getMinutes();
+        if (mins % 5 === 0) {
+            const [lat, lon] = gps.get(solarFarmId).split(",");
+            const [at, ws] = await getWeather(lat, lon);
+            atws.set(solarFarmId, [at, ws]);
+            console.log(`Updated weather for ${solarFarmId}: Temp - ${at}, Wind - ${ws}`);
+        }
+        // generate insert sql
+        let sqlPart = []
+        for (let s = 0; s < STRINGS; s++) {
+            for (let p = 0; p < PANELS; p++) {
+                const panelId = `panel${p}`;
+                const stringId = `string${s}`;
+                let tableName = `${solarFarmId}-${stringId}-${panelId}`;
+                const [at, ws] = atws.get(solarFarmId);
+                const mockData = generateMockData(at, ws);
+                const dateStr = moment().tz(TZ).format("YYYY-MM-DD HH:mm:ss.SSSZ");
+                sqlPart.push(`renewables_ha.\`${tableName}\` USING renewables_ha.solarfarms (panelid, string_id, site) TAGS('${panelId}', '${stringId}', '${solarFarmId}') ` +
+                    `VALUES ('${dateStr}', ${mockData.ambienttemperature_c}, ${mockData.windspeed_mps}, ${mockData.poweroutput_kw}, ${mockData.current}, ${mockData.voltage})`);
+            }
+        }
+        const insertQuery = "insert into " + sqlPart.join(" ");
+        // console.debug("Inserted query: " + insertQuery);
+        try {
+            // Execute the insert query
+            await execute(wsSql, insertQuery);
+        } catch (err) {
+            console.error(`Failed to insert data for ${solarFarmId}, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
+            await wsSql.close();
+            console.error("Reconnecting to TDengine...");
+            wsSql = await reconnect();
+            // Retry the insert after reconnecting
+            try {
+                await execute(wsSql, insertQuery);
+            } catch (err){
+                console.error(`Failed to insert data after reconnecting for ${solarFarmId}, ErrCode: ${err.code}, ErrMessage: ${err.message}`);
+            }
+        }
+    }, 10000);
+}
+
+async function reconnect(retryTimes = 3, retryInterval = 3000) {
+    for (let i = 0; i < retryTimes; i++) {
+        try {
+            conn = await createConnect();
+            console.log(`Reconnecting to TDengine success`);
+            return conn
+        } catch (err) {
+            console.error("reconnect failed, retrying after " + retryInterval + "ms, attempt " + (i + 1) + " of " + retryTimes);
+            if (i < retryTimes - 1) {
+                await new Promise(resolve => setTimeout(resolve, retryInterval));
+            } else {
+                console.error("Failed to reconnect after " + retryTimes + " attempts.");
+                throw err;
+            }
+        }
+    }
+}
+
+async function execute(connection, insertQuery) {
+    let taosResult = await connection.exec(insertQuery);
+    let rows_inserted = taosResult.getAffectRows();
+    console.log(`Inserted ${rows_inserted} rows to renewables_ha.solarfarms for ${solarFarmId}.`);
+}
+
+async function insertData1() {
+    let wsSql = await createConnect();
+
+    const STRINGS = 10;
+    const PANELS = 10;
+    const gps = new Map();
+    gps.set("solarfarma", "37.041,-120.92");
+    gps.set("solarfarmb", "37.61,-121.90");
+    gps.set("solarfarmc", "33.71,-115.45");
+    const atws = new Map();
+
+    // Initialize weather data
+    const [lat, lon] = gps.get(solarFarmId).split(",");
+    const [at, ws] = await getWeather(lat, lon);
+    atws.set(solarFarmId, [at, ws]);
+
+    setInterval(async () => {
         try {
             // Update weather data periodically (e.g., every 5 minutes)
             let rows_inserted = 0;
