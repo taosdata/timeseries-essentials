@@ -40,6 +40,18 @@ services:
       taos_net:
         ipv4_address: 172.24.0.4
     restart: unless-stopped
+  solarfarma:  # solarfarmb, solarfarmc
+    build: ./solarfarm
+    container_name: solarfarma-ingest
+    # depends_on:
+    #   - tdengine
+    environment:
+      - TDENGINE_HOST=lb
+      - TDENGINE_USER=root
+      - TDENGINE_PASS=taosdata
+    working_dir: /app
+    command: ["node", "solarfarm.js", "solarfarma"] # Adjust if using TypeScript directly
+    restart: always
 
 networks:
   taos_net:
