@@ -268,7 +268,7 @@ async function getWeather(lat, long) {
         const hourly = response.hourly();
         const radiation = hourly?.variables(0)?.value ?? 0;
 
-        console.log(`${currentTemperature2m} ${currentWindSpeed10m} ${radiation}`);
+        // console.log(`${currentTemperature2m} ${currentWindSpeed10m} ${radiation}`);
         return [currentTemperature2m.toString(), currentWindSpeed10m.toString()];
     } catch (error) {
         console.error('Error fetching weather data:', error);
